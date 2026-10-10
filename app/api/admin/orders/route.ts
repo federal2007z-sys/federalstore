@@ -1,6 +1,14 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { isAdminUser } from '@/lib/isAdmin';
+import { getProductById } from '@/lib/products';
+import { sendTelegram, fmtPayment } from '@/lib/telegram';
+
+const paymentLabels: Record<string, string> = {
+  sbp: 'СБП (карта / QR)',
+  funpay: 'FunPay',
+  discord: 'Discord',
+};
 
 export async function PATCH(request: Request) {
   const supabase = createClient();
@@ -31,6 +39,19 @@ export async function PATCH(request: Request) {
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  // Уведомление владельцу при подтверждении оплаты
+  if (status === 'paid') {
+    const product = getProductById(data.product_id);
+    await sendTelegram(
+      fmtPayment({
+        id: data.id,
+        productTitle: product?.title || data.product_id,
+        amount: data.amount,
+        paymentLabel: paymentLabels[data.payment_method] || data.payment_method,
+      })
+    );
   }
 
   return NextResponse.json({ order: data });

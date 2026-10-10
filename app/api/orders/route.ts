@@ -1,6 +1,13 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getProductById, paymentFor } from '@/lib/products';
+import { sendTelegram, fmtOrder } from '@/lib/telegram';
+
+const paymentLabels: Record<string, string> = {
+  sbp: 'СБП (карта / QR)',
+  funpay: 'FunPay',
+  discord: 'Discord',
+};
 
 export async function POST(request: Request) {
   const supabase = createClient();
@@ -40,6 +47,8 @@ export async function POST(request: Request) {
       amount: product.price,
       payment_method: method,
       status: 'pending',
+      buyer_email: user.email || null,
+      buyer_name: String(user.user_metadata?.full_name || '') || null,
     })
     .select()
     .single();
@@ -47,6 +56,18 @@ export async function POST(request: Request) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  // Уведомление владельцу в Telegram о новом заказе
+  await sendTelegram(
+    fmtOrder({
+      id: data.id,
+      productTitle: product.title,
+      amount: data.amount,
+      paymentLabel: paymentLabels[method] || method,
+      buyerName: data.buyer_name,
+      buyerEmail: data.buyer_email,
+    })
+  );
 
   return NextResponse.json({ order: data, paymentUrl: payment.url });
 }

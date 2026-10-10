@@ -17,6 +17,8 @@ export type Order = {
   status: OrderStatus;
   amount: number;
   payment_method: PaymentMethod;
+  buyer_email: string | null;
+  buyer_name: string | null;
   created_at: string;
   updated_at: string;
 };

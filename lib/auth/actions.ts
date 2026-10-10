@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
+import { sendTelegram, fmtRegistration } from '@/lib/telegram';
 
 export async function login(formData: FormData) {
   const supabase = createClient();
@@ -32,6 +33,15 @@ export async function register(formData: FormData) {
   if (error) {
     redirect(`/register?error=${encodeURIComponent(error.message)}`);
   }
+
+  // Уведомление владельцу в Telegram о новой регистрации
+  await sendTelegram(
+    fmtRegistration({
+      email,
+      fullName: fullName || undefined,
+    })
+  );
+
   redirect('/register/check');
 }
 
