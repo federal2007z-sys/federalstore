@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 
-// Проверка, является ли текущий пользователь админом (по email, заданному в SQL-миграции)
+// Проверка, является ли текущий пользователь админом или владельцем.
+// Роль хранится в таблице profiles (role: admin/owner).
 export async function isAdminUser(): Promise<boolean> {
   const supabase = createClient();
   const {
@@ -9,6 +10,14 @@ export async function isAdminUser(): Promise<boolean> {
 
   if (!user) return false;
 
-  const { data } = await supabase.rpc('is_admin');
-  return data === true;
+  try {
+    const { data } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+    return data?.role === 'admin' || data?.role === 'owner';
+  } catch {
+    return false;
+  }
 }

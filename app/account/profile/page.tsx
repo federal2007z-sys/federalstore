@@ -6,6 +6,20 @@ export default async function ProfilePage() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  let role: string | null = null;
+  if (user) {
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+      role = profile?.role || null;
+    } catch {
+      role = null;
+    }
+  }
+
   return (
     <div>
       <h1 style={{ fontSize: '1.8rem', marginBottom: '20px' }}>Профиль</h1>
@@ -18,6 +32,17 @@ export default async function ProfilePage() {
           <label>Email</label>
           <input type="text" value={user?.email || ''} readOnly />
         </div>
+        {role && (
+          <div className="form-group">
+            <label>Роль</label>
+            <div>
+              {role === 'owner' && <span className="owner-badge">👑 Владелец</span>}
+              {role === 'admin' && <span className="admin-badge">Администратор</span>}
+              {role === 'buyer' && <span className="buyer-badge">✓ Покупатель</span>}
+              {role === 'user' && <span style={{ color: 'var(--text-muted)' }}>Пользователь</span>}
+            </div>
+          </div>
+        )}
         <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
           Аккаунт создан: {user?.created_at ? new Date(user.created_at).toLocaleDateString('ru-RU') : '—'}
         </p>

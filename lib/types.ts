@@ -7,6 +7,7 @@ export type OrderStatus = 'pending' | 'paid' | 'cancelled';
 export type Profile = {
   id: string;
   full_name: string | null;
+  role: 'owner' | 'admin' | 'buyer' | 'user' | null;
   created_at: string;
 };
 

@@ -1,5 +1,5 @@
--- Админ-доступ: пользователь с указанным email становится админом.
--- Замените admin@example.com на ваш email. Выполнить в SQL Editor.
+-- Роль владельца (owner) и админов (admin) через таблицу profiles.
+-- Владелец настраивается отдельно — см. 00003 или инструкцию.
 
 create or replace function public.is_admin()
 returns boolean
@@ -8,9 +8,9 @@ stable
 security definer set search_path = public
 as $$
   select exists (
-    select 1 from auth.users
+    select 1 from public.profiles
     where id = auth.uid()
-      and lower(email) = lower('admin@example.com')
+      and role in ('admin', 'owner')
   );
 $$;
 
