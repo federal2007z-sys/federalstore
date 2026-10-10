@@ -1,6 +1,6 @@
 export type ProductKind = 'cfg' | 'lua';
 
-export type PaymentMethod = 'funpay' | 'discord';
+export type PaymentMethod = 'funpay' | 'discord' | 'sbp';
 
 export type OrderStatus = 'pending' | 'paid' | 'cancelled';
 

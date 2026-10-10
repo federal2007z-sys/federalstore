@@ -45,7 +45,7 @@ export default function AdminOrders({ orders, titleMap }: Props) {
             <td>{titleMap[o.product_id] || o.product_id}</td>
             <td>{o.user_id.slice(0, 8)}</td>
             <td>{formatPrice(o.amount)}</td>
-            <td>{o.payment_method === 'discord' ? 'Discord' : 'FunPay'}</td>
+            <td>{o.payment_method === 'discord' ? 'Discord' : o.payment_method === 'sbp' ? 'СБП' : 'FunPay'}</td>
             <td>
               <span className={`status status-${o.status}`}>{o.status}</span>
             </td>

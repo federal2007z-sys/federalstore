@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Требуется вход' }, { status: 401 });
   }
 
-  let body: { productId?: string };
+  let body: { productId?: string; paymentMethod?: 'funpay' | 'discord' | 'sbp' };
   try {
     body = await request.json();
   } catch {
@@ -26,13 +26,19 @@ export async function POST(request: Request) {
 
   const payment = paymentFor(product);
 
+  // Пользователь может выбрать СБП для любого товара
+  let method = body.paymentMethod || payment.method;
+  if (!['funpay', 'discord', 'sbp'].includes(method)) {
+    method = payment.method;
+  }
+
   const { data, error } = await supabase
     .from('orders')
     .insert({
       user_id: user.id,
       product_id: product.id,
       amount: product.price,
-      payment_method: payment.method,
+      payment_method: method,
       status: 'pending',
     })
     .select()

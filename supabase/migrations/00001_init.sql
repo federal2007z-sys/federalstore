@@ -32,7 +32,7 @@ create table if not exists public.orders (
   user_id uuid not null references auth.users (id) on delete cascade,
   product_id text not null,
   amount integer not null,
-  payment_method text not null check (payment_method in ('funpay', 'discord')),
+  payment_method text not null check (payment_method in ('funpay', 'discord', 'sbp')),
   status text not null default 'pending' check (status in ('pending', 'paid', 'cancelled')),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()

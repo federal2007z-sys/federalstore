@@ -31,6 +31,7 @@ export default async function AccountPage() {
             <tr>
               <th>Продукт</th>
               <th>Статус</th>
+              <th>Оплата</th>
               <th>Сумма</th>
               <th>Дата</th>
               <th></th>
@@ -48,6 +49,9 @@ export default async function AccountPage() {
                       {order.status === 'paid' && 'Оплачен'}
                       {order.status === 'cancelled' && 'Отменён'}
                     </span>
+                  </td>
+                  <td>
+                    {order.payment_method === 'discord' ? 'Discord' : order.payment_method === 'sbp' ? 'СБП' : 'FunPay'}
                   </td>
                   <td>{formatPrice(order.amount)}</td>
                   <td>{new Date(order.created_at).toLocaleDateString('ru-RU')}</td>

@@ -46,7 +46,13 @@ export default async function ProductPage({ params }: { params: { slug: string }
               <div className="price">
                 {formatPrice(product.price)} <small>разовая покупка</small>
               </div>
-              <BuyButton productId={product.id} isLoggedIn={!!user} paymentUrl={payment.url} />
+              <BuyButton
+                productId={product.id}
+                isLoggedIn={!!user}
+                defaultPayment={payment.method}
+                paymentUrl={payment.url}
+                price={product.price}
+              />
               <p className="secure-note">🔒 Доставка в личном кабинете после оплаты</p>
             </div>
           </div>

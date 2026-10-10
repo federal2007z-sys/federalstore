@@ -94,11 +94,19 @@ export function getProductById(id: string): Product | undefined {
   return products.find((p) => p.id === id);
 }
 
+// Единая информация об оплате по СБП (карта / QR) — действует для всех продуктов
+export const sbpPayment = {
+  method: 'sbp' as const,
+  label: 'СБП — перевод на карту',
+  card: '2204 2304 6044 7194 8',
+  note: 'Оплата по СБП, карте или QR-коду. Деньги приходят мгновенно.',
+};
+
 // Способ оплаты товара
 export function paymentFor(product: Product): {
-  method: 'funpay' | 'discord';
+  method: 'funpay' | 'discord' | 'sbp';
   label: string;
-  url: string;
+  url?: string;
 } {
   if (product.author === 'Шульмиров') {
     return {

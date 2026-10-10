@@ -40,6 +40,7 @@ export default function Footer() {
           <div>
             <h4>Оплата</h4>
             <ul>
+              <li>СБП: 2204 2304 6044 7194 8</li>
               <li>
                 <a href={process.env.NEXT_PUBLIC_FUNPAY_URL || 'https://funpay.com/users/18704750/'} target="_blank" rel="noopener">FunPay</a>
               </li>

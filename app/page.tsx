@@ -77,8 +77,15 @@ export default function Home() {
       <section id="payment">
         <div className="container">
           <h2 className="sec-title">Способы оплаты</h2>
-          <p className="sec-sub">Два удобных способа — выбирай, как тебе комфортнее.</p>
+          <p className="sec-sub">Три удобных способа — выбирай, как тебе комфортнее.</p>
           <div className="grid-3">
+            <div className="card">
+              <span className="card-badge">Для всех продуктов</span>
+              <h3>СБП / Карта / QR</h3>
+              <p>Быстрый перевод по номеру карты — деньги приходят мгновенно.</p>
+              <p style={{ marginTop: '10px', fontWeight: 700 }}>2204 2304 6044 7194 8</p>
+              <a href="/products" className="btn btn-primary">Выбрать товар</a>
+            </div>
             <div className="card">
               <span className="card-badge">Cfg by Federal · Lua by Federal</span>
               <h3>FunPay</h3>
