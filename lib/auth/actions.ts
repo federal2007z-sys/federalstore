@@ -19,11 +19,11 @@ export async function login(formData: FormData) {
 
 export async function register(formData: FormData) {
   const supabase = createClient();
-  const email = String(formData.get('email') || '');
+  const email = String(formData.get('email') || '').trim().toLowerCase();
   const password = String(formData.get('password') || '');
-  const fullName = String(formData.get('full_name') || '');
+  const fullName = String(formData.get('full_name') || '').trim();
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -42,6 +42,12 @@ export async function register(formData: FormData) {
     })
   );
 
+  // Если подтверждение email выключено в Supabase — пользователь сразу вошёл
+  if (data.session) {
+    redirect('/account');
+  }
+
+  // Иначе — отправляем на страницу «проверь почту»
   redirect('/register/check');
 }
 
