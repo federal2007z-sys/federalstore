@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { updateProfile } from '@/lib/auth/profile-actions';
 import AccentPicker from '@/components/AccentPicker';
+import BadgesWall from '@/components/BadgesWall';
 
 export default async function ProfilePage(props: {
   searchParams?: Promise<{ ok?: string; error?: string }>;
@@ -111,6 +112,11 @@ let profile: {
           Аккаунт создан: {user?.created_at ? new Date(user.created_at).toLocaleDateString('ru-RU') : '—'}
         </p>
       </form>
+
+      <div style={{ marginTop: 32 }}>
+        <h2 style={{ fontSize: '1.25rem', marginBottom: 12 }}>🏅 Мои значки</h2>
+        <BadgesWall />
+      </div>
     </div>
   );
 }
