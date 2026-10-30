@@ -16,10 +16,11 @@ const WORKFLOWS: Record<string, string> = {
   market: 'market-agent.yml',
   boss: 'boss-agent.yml',
   vk: 'vk-agent.yml',
+  telegraph: 'telegraph-agent.yml',
 };
 
-// Приоритет: промо чаще всего, остальные реже (простая ротация)
-const ROTATION = ['promo', 'promo', 'boss', 'promo', 'market', 'promo', 'vk', 'promo'];
+// Приоритет: промо и телеграф чаще, остальные реже (простая ротация)
+const ROTATION = ['promo', 'telegraph', 'promo', 'boss', 'promo', 'market', 'telegraph', 'promo'];
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
