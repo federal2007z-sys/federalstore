@@ -28,6 +28,8 @@ export default function BuyButton({
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [orderCreated, setOrderCreated] = useState(false);
+  const [promo, setPromo] = useState('');
+  const [promoMsg, setPromoMsg] = useState('');
 
   const USD_RATE = 90;
   const convertPrice = price / USD_RATE;
@@ -50,7 +52,7 @@ export default function BuyButton({
       const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId, paymentMethod: method }),
+        body: JSON.stringify({ productId, paymentMethod: method, promo: promo || undefined }),
       });
       if (res.status === 401) {
         router.push(`/login?next=/products/${productId}`);
@@ -168,6 +170,27 @@ export default function BuyButton({
           </div>
         </div>
       )}
+
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: '12px' }}>
+        <input
+          type="text"
+          placeholder="Промокод (например FEDERAL)"
+          value={promo}
+          onChange={(e) => { setPromo(e.target.value); setPromoMsg(''); }}
+          style={{
+            flex: 1, padding: '10px 12px', fontSize: '0.9rem',
+            borderRadius: 8, border: '1px solid var(--border)',
+            background: 'var(--bg-soft)', color: 'var(--text)',
+            fontFamily: 'inherit', outline: 'none', textTransform: 'uppercase' as const,
+          }}
+        />
+        {promo && (
+          <span style={{ fontSize: '0.8rem', color: 'var(--green)', whiteSpace: 'nowrap' }}>
+            {promo.toUpperCase() === 'FEDERAL' ? '-20%' : '—'}
+          </span>
+        )}
+      </div>
+      {promoMsg && <p style={{ fontSize: '0.85rem', color: 'var(--green)', marginBottom: 8 }}>{promoMsg}</p>}
 
       <button
         className="btn btn-primary"

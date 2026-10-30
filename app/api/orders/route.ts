@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getProductById, paymentFor } from '@/lib/products';
 import { sendTelegram, fmtOrder } from '@/lib/telegram';
+import { findPromo, applyPromo } from '@/lib/promocodes';
 
 const paymentLabels: Record<string, string> = {
   sbp: 'СБП (карта / QR)',
@@ -22,7 +23,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Требуется вход' }, { status: 401 });
   }
 
-  let body: { productId?: string; paymentMethod?: string };
+  let body: { productId?: string; paymentMethod?: string; promo?: string };
   try {
     const raw = await request.text();
     if (raw.length > 10000) {
@@ -38,6 +39,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Продукт не найден' }, { status: 404 });
   }
 
+  // Промокод: валидный даёт скидку, невалидный — просто игнорируем
+  const promo = findPromo(body.promo || '');
+  const finalAmount = applyPromo(product.price, promo);
+
   const payment = paymentFor(product);
 
   // Пользователь может выбрать способ оплаты из списка
@@ -52,7 +57,7 @@ export async function POST(request: Request) {
     .insert({
       user_id: user.id,
       product_id: product.id,
-      amount: product.price,
+      amount: finalAmount,
       payment_method: method,
       status: 'pending',
       buyer_email: user.email || null,
