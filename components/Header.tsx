@@ -94,6 +94,7 @@ export default function Header() {
               </ul>
             </li>
             <li><Link href="/about">О нас</Link></li>
+            <li><Link href="/guides">Гайды</Link></li>
             <li>
               <a href="https://t.me/federal1store1ru" target="_blank" rel="noopener" className="nav-telegram-link">📣 Наш Telegram</a>
             </li>
