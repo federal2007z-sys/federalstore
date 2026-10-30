@@ -1254,6 +1254,24 @@ export const products: Product[] = [
     ],
     postPurchase: { downloadUrl: FILES_BASE + 'helldivers2-guide.txt', note: 'После оплаты скачай гайд по Helldivers 2!' },
   },
+
+  {
+    id: 'digital-hogwarts-legacy-guide',
+    slug: 'digital-hogwarts-legacy-guide',
+    title: 'Гайд по Hogwarts Legacy: секреты и билды',
+    category: 'digital',
+    game: 'РПГ-гайды',
+    price: 229,
+    badge: 'Новинка',
+    shortDescription: 'Заклинания, секреты Хогвартса и лучшие билды для прохождения.',
+    description:
+      'Гайд по Hogwarts Legacy: все заклинания и их применение, секреты замка, билды под стиль игры, сборка лучших талантов.',
+    features: ['Все заклинания', 'Секреты замка', 'Билды и таланты', 'Прохождение'],
+    specs: [
+      { label: 'Тип', value: 'Цифровой файл (PDF+текст)' }, { label: 'Совместимость', value: 'Hogwarts Legacy' }, { label: 'Доставка', value: 'Автоматически' }
+    ],
+    postPurchase: { downloadUrl: FILES_BASE + 'hogwarts-legacy-guide.txt', note: 'После оплаты скачай гайд по Hogwarts Legacy!' },
+  },
 ];
 
 export function getProductById(id: string): Product | undefined {
