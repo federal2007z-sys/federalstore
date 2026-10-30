@@ -29,6 +29,11 @@ jobs:
           node-version: 20
 
       - name: Run Promo Agent (retry 3x)
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_OWNER_CHAT_ID: ${{ secrets.TG_OWNER_CHAT_ID }}
         run: |
           for i in 1 2 3; do
             node scripts/promo-agent.mjs && break || echo "Попытка $i не удалась, ждём 15s..." && sleep 15
