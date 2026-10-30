@@ -1,0 +1,45 @@
+name: PromoAgent
+
+on:
+  schedule:
+    - cron: "0 6 * * *"     # каждый день в 06:00 UTC (09:00 МСК)
+  push:
+    branches: [main]        # после каждого деплоя — свежий промо-пост
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  promo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config user.name "PromoAgent"
+          git config user.email "promo@federal-store.ru"
+          git remote set-url origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run Promo Agent
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_OWNER_CHAT_ID: ${{ secrets.TG_OWNER_CHAT_ID }}
+        run: node scripts/promo-agent.mjs
+
+      - name: Commit promo output
+        run: |
+          git add -A
+          git diff --cached --quiet || git commit -m "📣 PromoAgent: промо-посты обновлены"
+          git push origin main
