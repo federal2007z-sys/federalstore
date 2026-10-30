@@ -364,6 +364,15 @@ a {
   align-items: center;
 }
 
+.nav-telegram-link {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.nav-telegram-link:hover {
+  text-decoration: underline;
+}
+
 .nav-links li:hover > .mega-menu {
   display: block !important;
 }

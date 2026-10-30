@@ -42,6 +42,24 @@ export default function Footer() {
             </ul>
           </div>
           <div>
+            <h4>Мы в Telegram</h4>
+            <ul>
+              <li>
+                <a
+                  href="https://t.me/federal1store1ru"
+                  target="_blank"
+                  rel="noopener"
+                  style={{ fontWeight: 700, color: 'var(--accent)' }}
+                >
+                  📣 Канал: @federal1store1ru
+                </a>
+              </li>
+              <li style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                Скидки, новинки и гайды — подпишись!
+              </li>
+            </ul>
+          </div>
+          <div>
             <h4>Оплата и поддержка</h4>
             <ul>
               <li>СБП: 2204 2304 6044 7194 8</li>
