@@ -16,6 +16,10 @@ export function LoginForm() {
       {error && <div className="form-error">{error}</div>}
       <form action={login}>
         <input type="hidden" name="next" value={next} />
+        <div style={{ position: 'absolute', left: '-9999px', opacity: 0 }} aria-hidden="true">
+          <label htmlFor="company_website">Не заполняйте это поле</label>
+          <input type="text" id="company_website" name="company_website" tabIndex={-1} autoComplete="off" />
+        </div>
         <div className="form-group">
           <label htmlFor="email">Email</label>
           <input type="email" id="email" name="email" required autoComplete="email" />
@@ -45,8 +49,12 @@ export function RegisterForm() {
     const password = String(fd.get('password') || '');
     const confirm = String(fd.get('confirm') || '');
 
-    if (password.length < 6) {
-      setError('Пароль должен быть не короче 6 символов');
+    if (password.length < 8) {
+      setError('Пароль должен быть не короче 8 символов');
+      return;
+    }
+    if (!/[A-Za-zА-Яа-яЁё]/.test(password) || !/\d/.test(password)) {
+      setError('Пароль должен содержать буквы и хотя бы одну цифру');
       return;
     }
     if (password !== confirm) {
@@ -62,6 +70,10 @@ export function RegisterForm() {
       <p className="auth-sub">Создай аккаунт — и все покупки будут сохранены за тобой.</p>
       {error && <div className="form-error">{error}</div>}
       <form onSubmit={handleSubmit}>
+        <div style={{ position: 'absolute', left: '-9999px', opacity: 0 }} aria-hidden="true">
+          <label htmlFor="company_website">Не заполняйте это поле</label>
+          <input type="text" id="company_website" name="company_website" tabIndex={-1} autoComplete="off" />
+        </div>
         <div className="form-group">
           <label htmlFor="full_name">Имя / никнейм</label>
           <input type="text" id="full_name" name="full_name" autoComplete="name" />
