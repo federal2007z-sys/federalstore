@@ -2,8 +2,8 @@ name: MarketAgent
 
 on:
   schedule:
-    - cron: "0 */2 * * *"   # каждые 2 часа
-  workflow_dispatch:        # кнопка "Run workflow" в GitHub
+    - cron: "10 */2 * * *"   # каждые 2 часа в :10 (не пересекается с BossAgent :25 и PromoAgent :00/:30)
+  workflow_dispatch:          # кнопка "Run workflow" в GitHub
 
 permissions:
   contents: write
@@ -28,8 +28,11 @@ jobs:
         with:
           node-version: 20
 
-      - name: Run Market Agent
-        run: node scripts/agent.mjs
+      - name: Run Market Agent (retry 3x)
+        run: |
+          for i in 1 2 3; do
+            node scripts/agent.mjs && break || echo "Попытка $i не удалась, ждём 10s..." && sleep 10
+          done
 
       - name: Push changes (fallback)
         run: |

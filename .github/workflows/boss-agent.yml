@@ -1,0 +1,32 @@
+name: BossAgent
+
+on:
+  schedule:
+    - cron: "25 * * * *"    # каждый час в :25 (не совпадает с PromoAgent :00/:30)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  boss:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config user.name "BossAgent"
+          git config user.email "boss@federal-store.ru"
+          git remote set-url origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run BossAgent
+        run: node scripts/boss-agent.mjs
