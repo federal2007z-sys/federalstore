@@ -126,10 +126,15 @@ function auditStyle(blocks, src) {
   const hasGameLabels = (src.match(/export const gameLabels/) !== null);
   if (!hasGameLabels) issues.push('нет gameLabels (эмодзи игр)');
 
+  // Корректно извлекаем мапу gameLabels: ключи могут быть в кавычках или без
   const knownGames = new Set();
-  const gameLabelBlock = src.match(/gameLabels[\s\S]*?\{([\s\S]*?)\n\};/);
-  if (gameLabelBlock) {
-    for (const m of gameLabelBlock[1].matchAll(/'([^']+)':/g)) knownGames.add(m[1]);
+  const gStart = src.indexOf('export const gameLabels');
+  if (gStart >= 0) {
+    const gBlock = src.slice(gStart, src.indexOf('};', gStart) + 2);
+    // ключ: 'Все игры' или CS2 или 'Dota 2'
+    for (const m of gBlock.matchAll(/\n\s*(?:'([^']+)'|([A-Za-zА-Яа-яЁё0-9 _-]+))\s*:/g)) {
+      knownGames.add(m[1] || m[2]);
+    }
   }
 
   for (const b of blocks) {
@@ -140,7 +145,7 @@ function auditStyle(blocks, src) {
     // Заголовки не должны быть слишком длинными (ломает карточку)
     if (title && title.length > 70) issues.push(`слишком длинный title (${title.length}): ${slug}`);
     if (!short) issues.push(`нет shortDescription: ${slug}`);
-    if (game && !knownGames.has(game)) issues.push(`игра без эмодзи: ${game}`);
+    if (game && game !== 'Все игры' && !knownGames.has(game)) issues.push(`игра без эмодзи: ${game}`);
   }
   return issues;
 }
