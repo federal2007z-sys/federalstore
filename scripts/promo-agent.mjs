@@ -18,6 +18,8 @@ const SITE = 'https://federal-store.ru';
 
 const TG_TOKEN = process.env.TELEGRAM_BOT_TOKEN || process.env.TG_BOT_TOKEN || '';
 const TG_CHAT = process.env.TELEGRAM_CHAT_ID || process.env.TG_OWNER_CHAT_ID || '';
+// Публичный канал для распространения постов (@username канала)
+const TG_CHANNEL = 'federal1store1ru';
 
 function log(msg) {
   const line = `🤖 ${new Date().toISOString()} — ${msg}`;
@@ -68,17 +70,25 @@ async function pingIndexNow(urls) {
   }
 }
 
-async function sendTelegram(text) {
-  if (!TG_TOKEN || !TG_CHAT) {
-    log('Telegram не настроен (нет TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID в env) — пост сохранён в файл');
+async function sendTelegram(text, isChannel = false) {
+  if (!TG_TOKEN) {
+    log('Telegram не настроен (нет TELEGRAM_BOT_TOKEN в env) — пост сохранён в файл');
     return false;
   }
+
+  // Цель: канал (если указан и есть для него что слать) или личка владельца
+  const target = isChannel && TG_CHANNEL ? `@${TG_CHANNEL}` : TG_CHAT || '';
+  if (!target) {
+    log('Нет цели для отправки (нет TG_CHAT и не задан канал) — пост сохранён в файл');
+    return false;
+  }
+
   try {
     const res = await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        chat_id: TG_CHAT,
+        chat_id: target,
         text: text.slice(0, 3500),
         parse_mode: 'HTML',
         disable_web_page_preview: true,
@@ -86,10 +96,10 @@ async function sendTelegram(text) {
     });
     const data = await res.json();
     if (!res.ok) {
-      log(`Telegram: ошибка ${data?.description || res.statusText}`);
+      log(`Telegram: ошибка ${data?.description || res.statusText} (target=${target})`);
       return false;
     }
-    log('Telegram: пост отправлен');
+    log(`Telegram: пост отправлен в ${target}`);
     return true;
   } catch (e) {
     log(`Telegram: сеть ${e.message}`);
@@ -248,8 +258,12 @@ async function main() {
     ].join('\n');
   }
 
-  // Отправка в Telegram
-  await sendTelegram(chosen);
+  // Отправка: сначала в канал (аудитория), при неудаче — в личку владельца
+  const sentToChannel = await sendTelegram(chosen, true);
+  if (!sentToChannel) {
+    log('Не смог отправить в канал — пробую личку владельца');
+    await sendTelegram(chosen, false);
+  }
 
   // Сводка в отчёт
   log(`Сводка: товар дня = ${deal.title}, вариант поста = ${variant}, отправлено`);
