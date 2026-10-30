@@ -1,0 +1,44 @@
+name: VkAgent
+
+on:
+  schedule:
+    - cron: "17 * * * *"    # каждый час в :17 (не пересекается с другими агентами)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  vk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config user.name "VkAgent"
+          git config user.email "vk@federal-store.ru"
+          git remote set-url origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run VkAgent (retry 3x)
+        env:
+          VK_TOKEN: ${{ secrets.VK_TOKEN }}
+          VK_GROUP_ID: ${{ secrets.VK_GROUP_ID }}
+        run: |
+          for i in 1 2 3; do
+            node scripts/vk-agent.mjs && break || echo "Попытка $i не удалась, ждём 15s..." && sleep 15
+          done
+
+      - name: Commit vk output
+        run: |
+          git add -A
+          git diff --cached --quiet || git commit -m "📘 VkAgent: пост для VK обновлён"
+          git push origin main
