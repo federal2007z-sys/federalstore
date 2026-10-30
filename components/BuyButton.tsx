@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -8,22 +8,19 @@ import { QRCodeCanvas } from 'qrcode.react';
 type PaymentMethod = 'sbp' | 'paypal' | 'usdt' | 'card_global';
 
 const SBP_CARD = '2204 2304 6044 7194 8';
-// Реквизиты для международных платежей (замените на свои)
 const PAYPAL_EMAIL = 'federalstore@example.com';
-const USDT_WALLET = '0xC12b843DB5e458C069f87925a320d0f7E556fA75'; // USDT ERC-20 (ETH)
+const USDT_WALLET = '0xC12b843DB5e458C069f87925a320d0f7E556fA75';
 const GLOBAL_CARD_BANK = 'GB29 NWBK 6016 1331 9268 19';
-const USDT_MIN_AMOUNT = 50; // минимальная сумма пополнения в USD
+const USDT_MIN_AMOUNT = 50;
 
 export default function BuyButton({
   productId,
   isLoggedIn,
   price,
-  downloadUrl,
 }: {
   productId: string;
   isLoggedIn: boolean;
   price: number;
-  downloadUrl?: string | null;
 }) {
   const router = useRouter();
   const [method, setMethod] = useState<PaymentMethod>('sbp');
@@ -32,7 +29,6 @@ export default function BuyButton({
   const [copied, setCopied] = useState(false);
   const [orderCreated, setOrderCreated] = useState(false);
 
-  // Примерный курс (можно подтягивать живьём через API при необходимости)
   const USD_RATE = 90;
   const convertPrice = price / USD_RATE;
 
@@ -82,7 +78,6 @@ export default function BuyButton({
 
   return (
     <div>
-      {/* Выбор способа оплаты */}
       <div style={{ marginBottom: '16px' }}>
         <p style={{ fontSize: '0.9rem', marginBottom: '8px', color: 'var(--text-muted)' }}>Способ оплаты:</p>
         <select
@@ -191,18 +186,14 @@ export default function BuyButton({
             <li>Мы получим уведомление и <b>подтвердим оплату</b> в течение пары минут (обычно мгновенно).</li>
             <li>После подтверждения заказ станет доступен в <Link href="/account" style={{ color: 'var(--green)', textDecoration: 'underline', fontWeight: 700 }}>личном кабинете</Link> — там появится кнопка <b>Скачать</b>.</li>
             <li>Нажми <b>Скачать</b> — и ты получишь файл (или ссылку на него) мгновенно.</li>
-            {!downloadUrl && <li>Если товар подготавливается индивидуально (дизайн, превью и т.п.) — напиши нам в Telegram <b>@vYwmyfBcyY</b>, и мы сделаем его и отправим тебе.</li>}
           </ol>
           <div style={{ marginTop: 12 }}>
-            {downloadUrl ? (
-              <a href={downloadUrl} target="_blank" rel="noopener" className="btn btn-primary" style={{ width: '100%' }}>
-                📥 Скачать файл
-              </a>
-            ) : (
-              <a href="https://t.me/vYwmyfBcyY" target="_blank" rel="noopener" className="btn btn-primary" style={{ width: '100%' }}>
-                💬 Написать в Telegram
-              </a>
-            )}
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: 8 }}>
+              🔒 Файл откроется в <Link href="/account" style={{ color: 'var(--green)', textDecoration: 'underline', fontWeight: 700 }}>личном кабинете</Link> после подтверждения оплаты.
+            </p>
+            <Link href="/account" className="btn btn-primary" style={{ width: '100%' }}>
+              📥 Перейти в личный кабинет
+            </Link>
           </div>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: 10, textAlign: 'center' }}>
             Проблемы с оплатой? Пиши нам — поможем! Поддержка: @vYwmyfBcyY

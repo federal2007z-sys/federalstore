@@ -1,8 +1,14 @@
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
+  // Защита: только с правильным секретным ключом (в URL ?secret=...)
+  const secret = new URL(request.url).searchParams.get('secret') || '';
+  const expectedSecret = process.env.TG_WEBHOOK_SECRET || '';
+  if (!expectedSecret || secret !== expectedSecret) {
+    return NextResponse.json({ ok: false, error: 'Доступ запрещён' }, { status: 403 });
+  }
+
   const token = process.env.TG_BOT_TOKEN || '';
-  const secret = process.env.TG_WEBHOOK_SECRET || '';
   const url = `https://federal-store.ru/api/tg-bot`;
   const action = new URL(request.url).searchParams.get('action') || '';
 

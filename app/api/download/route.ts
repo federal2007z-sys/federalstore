@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getProductById } from '@/lib/products';
+import fs from 'fs';
+import path from 'path';
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -34,11 +36,9 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Заказ не оплачен' }, { status: 403 });
   }
 
-  // Если у товара задана прямая ссылка на скачивание (Google Drive и т.п.) — ведём туда
+  // Если у товара задана прямая ссылка на скачивание (внешняя) — ведём туда
   const product = getProductById(order.product_id);
-  const downloadUrl = product?.postPurchase?.downloadUrl;
 
-  // Если продукт не найден в каталоге — сообщаем об этом (товар снят с продажи)
   if (!product) {
     return NextResponse.json(
       { error: 'Этот товар снят с продажи. Обратитесь в поддержку.' },
@@ -46,23 +46,45 @@ export async function GET(request: Request) {
     );
   }
 
-  if (downloadUrl) {
-    return NextResponse.redirect(downloadUrl);
+  const external = product.postPurchase?.downloadUrl;
+  // Внутренние ссылки (federal-store.ru/downloads/...) игнорируем —
+  // файлы отдаём из приватной папки после проверки оплаты
+  if (external && !external.includes('federal-store.ru/downloads/')) {
+    return NextResponse.redirect(external);
   }
 
-  // Иначе — файл хранится в Supabase Storage, bucket "products", путь = product_id.txt
+  // Файл лежит в private/downloads/{product_id}.txt
   const fileName = `${order.product_id}.txt`;
+  const filePath = path.join(process.cwd(), 'private', 'downloads', fileName);
 
-  const { data, error } = await supabase.storage
-    .from('products')
-    .createSignedUrl(fileName, 60);
-
-  if (error || !data?.signedUrl) {
+  if (!fs.existsSync(filePath)) {
+    // Пробуем по slug — некоторые товары имеют файл с другим именем
+    const sl = product.slug;
+    const altPath = path.join(process.cwd(), 'private', 'downloads', `${sl}.txt`);
+    if (fs.existsSync(altPath)) {
+      const content = fs.readFileSync(altPath, 'utf8');
+      return new NextResponse(content, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'Content-Disposition': `attachment; filename="${sl}.txt"`,
+          'Cache-Control': 'private, no-store',
+        },
+      });
+    }
     return NextResponse.json(
       { error: 'Файл ещё не загружен. Ожидайте, мы пришлём его в ближайшее время.' },
       { status: 404 }
     );
   }
 
-  return NextResponse.redirect(data.signedUrl);
+  const content = fs.readFileSync(filePath, 'utf8');
+  return new NextResponse(content, {
+    status: 200,
+    headers: {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Content-Disposition': `attachment; filename="${fileName}"`,
+      'Cache-Control': 'private, no-store',
+    },
+  });
 }

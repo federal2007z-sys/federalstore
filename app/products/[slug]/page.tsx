@@ -103,7 +103,6 @@ export default async function ProductPage({ params }: { params: { slug: string }
                 productId={product.id}
                 isLoggedIn={!!user}
                 price={product.price}
-                downloadUrl={product.postPurchase?.downloadUrl || null}
               />
               <p className="secure-note">🔒 Доставка в личном кабинете после оплаты</p>
             </div>
