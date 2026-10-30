@@ -157,9 +157,11 @@ function addFromQueue(blocks, src) {
   },
 `;
 
-  // Вставляем перед закрывающей скобкой массива
-  const insertIdx = src.lastIndexOf('];');
-  if (insertIdx === -1) return { added: 0, msg: 'не найден конец массива' };
+  // Вставляем в конец массива products.
+  // Ищем ТОЛЬКО закрывающую скобку массива products: первый "];" ПОСЛЕ последнего id товара.
+  const lastIdIdx = src.lastIndexOf("id: '");
+  let insertIdx = src.indexOf('];', lastIdIdx);
+  if (insertIdx === -1) return { added: 0, msg: 'не найден конец массива products' };
   const newSrc = src.slice(0, insertIdx) + block + src.slice(insertIdx);
   fs.writeFileSync(LIB, newSrc, 'utf8');
 

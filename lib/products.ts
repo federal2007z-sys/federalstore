@@ -1234,15 +1234,6 @@ export const products: Product[] = [
     ],
     postPurchase: { downloadUrl: FILES_BASE + 'diablo4-guide.txt', note: 'После оплаты скачай гайд по Diablo 4!' },
   },
-];
-
-export function getProductById(id: string): Product | undefined {
-  return products.find((p) => p.id === id);
-}
-
-export function getRelatedProducts(id: string, count = 3): Product[] {
-  const current = products.find((p) => p.id === id);
-  if (!current) return [
   {
     id: 'digital-helldivers2-guide',
     slug: 'digital-helldivers2-guide',
@@ -1256,11 +1247,22 @@ export function getRelatedProducts(id: string, count = 3): Product[] {
       'Гайд по Helldivers 2: стратегии высадки, билды снаряжения, фарм ресурсов, тактики против терминалов и автоматов.',
     features: ['Стратегии высадки', 'Билды снаряжения', 'Фарм ресурсов', 'Тактики на врагов'],
     specs: [
-      { label: 'Тип', value: 'Цифровой файл (PDF+текст)' }, { label: 'Совместимость', value: 'Helldivers 2' }, { label: 'Доставка', value: 'Автоматически' }
+      { label: 'Тип', value: 'Цифровой файл (PDF+текст)' },
+      { label: 'Совместимость', value: 'Helldivers 2' },
+      { label: 'Доставка', value: 'Автоматически' },
+      { label: 'Срок', value: 'Мгновенно после оплаты' },
     ],
     postPurchase: { downloadUrl: FILES_BASE + 'helldivers2-guide.txt', note: 'После оплаты скачай гайд по Helldivers 2!' },
   },
 ];
+
+export function getProductById(id: string): Product | undefined {
+  return products.find((p) => p.id === id);
+}
+
+export function getRelatedProducts(id: string, count = 3): Product[] {
+  const current = products.find((p) => p.id === id);
+  if (!current) return [];
   const sameGame = products.filter((p) => p.id !== id && p.game === current.game);
   const others = products.filter((p) => p.id !== id && p.game !== current.game);
   return [...sameGame, ...others].slice(0, count);
