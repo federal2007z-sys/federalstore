@@ -60,6 +60,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Нельзя писать самому себе' }, { status: 400 });
   }
 
+  // Проверка бана
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('banned_at')
+    .eq('id', user.id)
+    .single();
+  if (profile?.banned_at) {
+    return NextResponse.json({ error: 'Ваш аккаунт заблокирован' }, { status: 403 });
+  }
+
   const { data, error } = await supabase
     .from('messages')
     .insert({ sender_id: user.id, recipient_id: recipientId, content })

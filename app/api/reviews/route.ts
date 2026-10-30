@@ -60,6 +60,16 @@ export async function POST(request: Request) {
   }
   if (text.length > 1000) return NextResponse.json({ error: 'Отзыв слишком длинный' }, { status: 413 });
 
+  // Проверка бана
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('banned_at')
+    .eq('id', user.id)
+    .single();
+  if (profile?.banned_at) {
+    return NextResponse.json({ error: 'Ваш аккаунт заблокирован' }, { status: 403 });
+  }
+
 const { data, error } = await supabase
     .from('reviews')
     .insert({ user_id: user.id, product_id: productId, rating, text })

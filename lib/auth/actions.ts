@@ -69,12 +69,27 @@ export async function login(formData: FormData) {
     redirect('/login?error=Слишком много попыток. Подождите 5 минут.');
   }
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data: signInData, error } = await supabase.auth.signInWithPassword({ email, password });
+
   if (error) {
     // Не раскрываем, существует ли аккаунт — одинаковое сообщение
     recordLoginFail(email);
     redirect('/login?error=Неверный email или пароль');
   }
+
+  // Проверка бана после успешного входа
+  if (signInData.user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('banned_at')
+      .eq('id', signInData.user.id)
+      .single();
+
+    if (profile?.banned_at) {
+      redirect('/login?error=Ваш аккаунт заблокирован. Обратитесь в поддержку.');
+    }
+  }
+
   redirect(next);
 }
 
@@ -132,4 +147,50 @@ export async function signOut() {
   const supabase = createClient();
   await supabase.auth.signOut();
   redirect('/');
+}
+
+// Восстановление пароля: отправка ссылки на email
+export async function requestReset(formData: FormData) {
+  const supabase = createClient();
+  const email = String(formData.get('email') || '').trim().toLowerCase();
+
+  // Honeypot
+  const honeypot = String(formData.get('company_website') || '');
+  if (honeypot) {
+    redirect('/forgot-password?error=Некорректный запрос');
+  }
+
+  if (!email) {
+    redirect('/forgot-password?error=Введите email');
+  }
+
+  // Всегда «отправляем» — не раскрываем, есть ли такой email
+  await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://federal-store.ru'}/reset-password`,
+  });
+
+  redirect('/forgot-password?sent=1');
+}
+
+// Установка нового пароля после перехода по ссылке
+export async function resetPassword(formData: FormData) {
+  const supabase = createClient();
+  const password = String(formData.get('password') || '');
+  const confirm = String(formData.get('confirm') || '');
+
+  if (password !== confirm) {
+    redirect('/reset-password?error=Пароли не совпадают');
+  }
+
+  const passError = validatePassword(password);
+  if (passError) {
+    redirect(`/reset-password?error=${encodeURIComponent(passError)}`);
+  }
+
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) {
+    redirect(`/reset-password?error=${encodeURIComponent(error.message)}`);
+  }
+
+  redirect('/login?reset=1');
 }

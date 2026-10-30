@@ -57,6 +57,16 @@ export async function POST(request: Request) {
   if (!content) return NextResponse.json({ error: 'Введите текст сообщения' }, { status: 400 });
   if (content.length > 2000) return NextResponse.json({ error: 'Сообщение слишком длинное (макс. 2000 символов)' }, { status: 413 });
 
+  // Проверка бана
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('banned_at')
+    .eq('id', user.id)
+    .single();
+  if (profile?.banned_at) {
+    return NextResponse.json({ error: 'Ваш аккаунт заблокирован' }, { status: 403 });
+  }
+
   const { data, error } = await supabase
     .from('chat_messages')
     .insert({ user_id: user.id, content })

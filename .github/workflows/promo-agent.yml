@@ -2,9 +2,7 @@ name: PromoAgent
 
 on:
   schedule:
-    - cron: "0 6 * * *"     # каждый день в 06:00 UTC (09:00 МСК)
-  push:
-    branches: [main]        # после каждого деплоя — свежий промо-пост
+    - cron: "*/30 * * * *"   # каждые 30 минут
   workflow_dispatch:
 
 permissions:
@@ -38,8 +36,4 @@ jobs:
           TG_OWNER_CHAT_ID: ${{ secrets.TG_OWNER_CHAT_ID }}
         run: node scripts/promo-agent.mjs
 
-      - name: Commit promo output
-        run: |
-          git add -A
-          git diff --cached --quiet || git commit -m "📣 PromoAgent: промо-посты обновлены"
-          git push origin main
+      # Без коммита/пуша — чтобы не дёргать деплой каждый час. Посты сохраняются в артефакт необязательно.

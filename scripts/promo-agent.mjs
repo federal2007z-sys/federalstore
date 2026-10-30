@@ -194,11 +194,65 @@ async function main() {
   const pingStatus = await pingIndexNow(sampleUrls);
   log(`IndexNow: HTTP ${pingStatus}`);
 
+  // === РАСПРОСТРАНЕНИЕ: каждый запуск (раз в ~30 мин) отправляем РАЗНЫЙ пост ===
+  // Категории постов чередуются по порядку: товар дня → новинки → о магазине →
+  // случайный товар → товар для конкретной игры → ... (цикл)
+  const gameGroups = {};
+  for (const p of items) {
+    if (!gameGroups[p.game]) gameGroups[p.game] = [];
+    gameGroups[p.game].push(p);
+  }
+  const gamesList = Object.keys(gameGroups).filter((g) => g !== 'Все игры');
+
+  const cycleIndex = Math.floor(Date.now() / (30 * 60 * 1000)); // номер 30-минутного окна
+  const variant = cycleIndex % 6;
+  const gameIdx = cycleIndex % Math.max(gamesList.length, 1);
+
+  let chosen;
+  if (variant === 0) {
+    chosen = dealPost;
+  } else if (variant === 1) {
+    chosen = newPost;
+  } else if (variant === 2) {
+    chosen = aboutPost;
+  } else if (variant === 3) {
+    // Случайный товар
+    const rnd = items[Math.floor(Math.random() * items.length)];
+    chosen = [
+      `🔎 <b>Хит этой недели в FederalStore</b>`,
+      ``,
+      `${GAME_EMOJI[rnd.game] || '🎮'} <b>${esc(rnd.title)}</b>`,
+      `${esc(rnd.short)}`,
+      ``,
+      `💰 <b>${formatPrice(rnd.price)}</b> · выдача сразу после оплаты`,
+      ``,
+      `👉 ${SITE}/products/${rnd.slug}`,
+      ``,
+      `#FederalStore #${rnd.game.replace(/[\s-]/g, '')} #скидка`,
+    ].join('\n');
+  } else {
+    // Товар из конкретной игры
+    const g = gamesList[gameIdx] || items[0].game;
+    const gameItems = gameGroups[g] || items;
+    const pick = gameItems[Math.floor(Math.random() * gameItems.length)];
+    chosen = [
+      `${GAME_EMOJI[g] || '🕹️'} <b>Раздел «${g}» в FederalStore</b>`,
+      ``,
+      `Мы собрали лучшие гайды и настройки для ${g}:`,
+      ``,
+      ...gameItems.slice(0, 4).map((p) => `• <b>${esc(p.title)}</b> — ${formatPrice(p.price)}`),
+      ``,
+      `👉 ${SITE}/products`,
+      ``,
+      `#FederalStore #${g.replace(/[\s-]/g, '')} #гайды #настройки`,
+    ].join('\n');
+  }
+
   // Отправка в Telegram
-  await sendTelegram(dealPost);
+  await sendTelegram(chosen);
 
   // Сводка в отчёт
-  log(`Сводка: товар дня = ${deal.title}, новинок = ${fresh.length}й`);
+  log(`Сводка: товар дня = ${deal.title}, вариант поста = ${variant}, отправлено`);
   log('Готово ✓');
 }
 
