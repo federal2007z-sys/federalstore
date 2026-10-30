@@ -55,6 +55,18 @@ const TOPICS = [
   { title: 'Секреты и пасхалки в играх', game: 'Все игры', kw: 'секреты, пасхалки, локации' },
   { title: 'Движение в Apex Legends', game: 'Apex Legends', kw: 'мувмент, superglide, slide' },
   { title: 'Постройки в Fortnite: гайд', game: 'Fortnite', kw: 'строительство, 90s, редактирование' },
+  { title: 'Раскидки гранат на Mirage', game: 'CS2', kw: 'смоук, флешка, мирраж' },
+  { title: 'Лучшие легенды в Apex в этом сезоне', game: 'Apex Legends', kw: 'легенды, мета, композиция' },
+  { title: 'Сборки в Diablo 4 для новичка', game: 'РПГ-гайды', kw: 'класс, билд, дьябло' },
+  { title: 'Экономика в CS2: когда покупать', game: 'CS2', kw: 'эко, форс, бай, сейв' },
+  { title: 'Варды в Dota 2: куда ставить', game: 'Dota 2', kw: 'вард, контроль карты, руны' },
+  { title: 'Лучшие сиды для Minecraft', game: 'Minecraft', kw: 'сиды, деревня, спавн' },
+  { title: 'Коллекционирование в GTA 5', game: 'GTA 5', kw: 'коллекция, карты, сокровища' },
+  { title: 'Как играть за агентов в Valorant', game: 'Valorant', kw: 'агенты, способности, тактики' },
+  { title: 'Гайд по строительству в Fortnite', game: 'Fortnite', kw: 'билд, слухи, вайб' },
+  { title: 'Прокачка самолётов в War Thunder', game: 'War Thunder', kw: 'авиация, прокачка, билеты' },
+  { title: 'Контр-пики в Dota 2', game: 'Dota 2', kw: 'пик, герой, контра' },
+  { title: 'Фарм серебра в War Thunder', game: 'War Thunder', kw: 'фарм, серебро, экономика' },
 ];
 
 async function getToken() {
