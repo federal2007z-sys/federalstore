@@ -7,6 +7,9 @@ const paymentLabels: Record<string, string> = {
   sbp: 'СБП (карта / QR)',
   funpay: 'FunPay',
   discord: 'Discord',
+  paypal: 'PayPal',
+  usdt: 'Криптовалюта (USDT)',
+  card_global: 'Международная карта',
 };
 
 export async function POST(request: Request) {
@@ -19,9 +22,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Требуется вход' }, { status: 401 });
   }
 
-  let body: { productId?: string; paymentMethod?: 'funpay' | 'discord' | 'sbp' };
+  let body: { productId?: string; paymentMethod?: string };
   try {
-    body = await request.json();
+    const raw = await request.text();
+    if (raw.length > 10000) {
+      return NextResponse.json({ error: 'Слишком большой запрос' }, { status: 413 });
+    }
+    body = raw ? JSON.parse(raw) : {};
   } catch {
     return NextResponse.json({ error: 'Некорректный запрос' }, { status: 400 });
   }
@@ -33,9 +40,10 @@ export async function POST(request: Request) {
 
   const payment = paymentFor(product);
 
-  // Пользователь может выбрать СБП для любого товара
+  // Пользователь может выбрать способ оплаты из списка
+  const ALLOWED = ['funpay', 'discord', 'sbp', 'paypal', 'usdt', 'card_global'];
   let method = body.paymentMethod || payment.method;
-  if (!['funpay', 'discord', 'sbp'].includes(method)) {
+  if (!ALLOWED.includes(method)) {
     method = payment.method;
   }
 
@@ -69,5 +77,8 @@ export async function POST(request: Request) {
     })
   );
 
-  return NextResponse.json({ order: data, paymentUrl: payment.url });
+  // Ссылка на Discord для товаров автора Federal (если задана)
+const downloadUrl = product.postPurchase?.downloadUrl || null;
+
+  return NextResponse.json({ order: data, paymentUrl: payment.url, downloadUrl });
 }

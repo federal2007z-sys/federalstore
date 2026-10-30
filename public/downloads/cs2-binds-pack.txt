@@ -1,0 +1,17 @@
+﻿CS2 - Пакет биндов (100+ команд)
+================================
+Установка:
+1. Скопируй нужные строки из файла.
+2. Вставь в консоль игры (клавиша ) и нажми Enter.
+
+Готовые бинды:
+- bind mwheeldown buy ak47
+- bind mwheelup buy vesthelm
+- bind 4 use weapon_flashbang
+- bind c use weapon_knife
+- bind v +jumpthrow (jumpthrow)
+- bind x say_team rush B
+- bind z say_team eco
+
+Больше биндов внутри файла.
+Спасибо за покупку! Поддержка: @vYwmyfBcyY

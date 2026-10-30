@@ -56,7 +56,7 @@ export default async function AccountPage() {
                   <td>{formatPrice(order.amount)}</td>
                   <td>{new Date(order.created_at).toLocaleDateString('ru-RU')}</td>
                   <td>
-                    {order.status === 'paid' && product && (
+                    {order.status === 'paid' && (
                       <Link
                         href={`/api/download?order=${order.id}`}
                         className="btn btn-primary"

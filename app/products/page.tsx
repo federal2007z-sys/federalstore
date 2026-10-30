@@ -1,45 +1,23 @@
-import Link from 'next/link';
-import { products, formatPrice } from '@/lib/products';
+import ProductsCatalog, { type SortKey } from '@/components/ProductsCatalog';
 
-export default function ProductsPage() {
+export default function ProductsPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  const q = typeof searchParams.q === 'string' ? searchParams.q : '';
+  const game = typeof searchParams.game === 'string' ? searchParams.game : 'all';
+  const maxRaw = typeof searchParams.max === 'string' ? Number(searchParams.max) : NaN;
+  const max = Number.isNaN(maxRaw) || maxRaw <= 0 ? 600 : maxRaw;
+  const rawSort = typeof searchParams.sort === 'string' ? searchParams.sort : 'default';
+  const sort: SortKey = rawSort === 'price-asc' || rawSort === 'price-desc' ? rawSort : 'default';
+
   return (
-    <>
-      <div className="page-hero">
-        <div className="container">
-          <p className="breadcrumb">Главная / Каталог</p>
-          <h1>Каталог</h1>
-          <p>Три проверенных продукта под разные стили игры. Все конфиги обновляются бесплатно.</p>
-        </div>
-      </div>
-
-      <section id="products">
-        <div className="container">
-          <div className="grid-3">
-            {products.map((p) => (
-              <div className="card" key={p.id}>
-                <span className="card-badge">{p.badge}</span>
-                <h3>{p.title}</h3>
-                <p>{p.description}</p>
-                <div className="card-price">
-                  {formatPrice(p.price)} <small>/ навсегда</small>
-                </div>
-                <ul className="card-features">
-                  {p.features.map((f) => <li key={f}>{f}</li>)}
-                </ul>
-                <Link href={`/products/${p.slug}`} className="btn btn-primary">Подробнее</Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <div className="container">
-        <div className="cta-banner">
-          <h2>Не знаешь, что выбрать?</h2>
-          <p>Создай аккаунт или напиши нам — поможем подобрать конфиг под твой стиль игры.</p>
-          <Link href="/register" className="btn btn-dark">Создать аккаунт</Link>
-        </div>
-      </div>
-    </>
+    <ProductsCatalog
+      initialQuery={q}
+      initialGame={game}
+      initialMax={max}
+      initialSort={sort}
+    />
   );
 }

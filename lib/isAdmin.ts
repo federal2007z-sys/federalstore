@@ -16,7 +16,11 @@ export async function isAdminUser(): Promise<boolean> {
       .select('role')
       .eq('id', user.id)
       .single();
-    return data?.role === 'admin' || data?.role === 'owner';
+    return (
+      data?.role === 'admin' ||
+      data?.role === 'owner' ||
+      data?.role === 'seller'
+    );
   } catch {
     return false;
   }

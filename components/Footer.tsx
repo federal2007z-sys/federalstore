@@ -7,9 +7,12 @@ const navLinks = [
 
 export default function Footer() {
   const productsLinks = [
-    { href: '/products/cfg-federal', label: 'Cfg by Federal' },
-    { href: '/products/cfg-shulmirov', label: 'Cfg by Шульмиров' },
-    { href: '/products/lua-federal', label: 'Lua by Federal' },
+    { href: '/products/service-youtube-preview', label: 'Превью для YouTube' },
+    { href: '/products/digital-cs2-binds-pack', label: 'Пак биндов CS2' },
+    { href: '/products/digital-valorant-settings-pack', label: 'Настройки Valorant' },
+    { href: '/products/digital-warthunder-tactics-guide', label: 'Тактики War Thunder' },
+    { href: '/products/digital-warthunder-vehicle-guide', label: 'Прокачка War Thunder' },
+    { href: '/products/digital-pc-optimization', label: 'Оптимизация ПК' },
   ];
 
   return (
@@ -17,8 +20,8 @@ export default function Footer() {
       <div className="container">
         <div className="footer-grid">
           <div>
-            <h4>FederalSeller / ShulmirovSeller</h4>
-            <p>Конфиги и Lua-скрипты для CS:GO / CS2. Профессиональная калибровка под каждого игрока.</p>
+            <h4>FederalStore</h4>
+            <p>Скины, аксессуары и гайды для CS2. Мгновенная доставка и честные цены.</p>
           </div>
           <div>
             <h4>Навигация</h4>
@@ -26,6 +29,7 @@ export default function Footer() {
               {navLinks.map((l) => (
                 <li key={l.href}><Link href={l.href}>{l.label}</Link></li>
               ))}
+              <li><Link href="/about">О нас</Link></li>
               <li><Link href="/account">Личный кабинет</Link></li>
             </ul>
           </div>
@@ -38,21 +42,25 @@ export default function Footer() {
             </ul>
           </div>
           <div>
-            <h4>Оплата</h4>
+            <h4>Оплата и поддержка</h4>
             <ul>
               <li>СБП: 2204 2304 6044 7194 8</li>
+              <li>Криптовалюта (USDT)</li>
+              <li>PayPal</li>
               <li>
-                <a href={process.env.NEXT_PUBLIC_FUNPAY_URL || 'https://funpay.com/users/18704750/'} target="_blank" rel="noopener">FunPay</a>
-              </li>
-              <li>
-                <a href={process.env.NEXT_PUBLIC_DISCORD_URL || 'https://discord.gg/q2YsdfZyD'} target="_blank" rel="noopener">Discord</a>
+                <a href="https://t.me/vYwmyfBcyY" target="_blank" rel="noopener">Поддержка: @vYwmyfBcyY</a>
               </li>
             </ul>
           </div>
         </div>
         <div className="footer-bottom">
-          <span>© {new Date().getFullYear()} FederalSeller / ShulmirovSeller. Все права защищены.</span>
-          <span><Link href="/admin" style={{ color: 'var(--text-muted)' }}>Админ</Link></span>
+          <span>© {new Date().getFullYear()} FederalStore. Все права защищены.</span>
+          <span style={{ display: 'flex', gap: 16 }}>
+            <Link href="/privacy" style={{ color: 'var(--text-muted)' }}>Конфиденциальность</Link>
+            <Link href="/offer" style={{ color: 'var(--text-muted)' }}>Оферта</Link>
+            <Link href="/vkposts" style={{ color: 'var(--text-muted)' }}>Посты для VK</Link>
+            <Link href="/admin" style={{ color: 'var(--text-muted)' }}>Админ</Link>
+          </span>
         </div>
       </div>
     </footer>
