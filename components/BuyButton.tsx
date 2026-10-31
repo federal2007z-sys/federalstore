@@ -30,6 +30,33 @@ export default function BuyButton({
   const [orderCreated, setOrderCreated] = useState(false);
   const [promo, setPromo] = useState('');
   const [promoMsg, setPromoMsg] = useState('');
+  const [paidNotifying, setPaidNotifying] = useState(false);
+  const [paidSent, setPaidSent] = useState(false);
+  const [paidMsg, setPaidMsg] = useState('');
+
+  async function notifyPaid(e: React.MouseEvent<HTMLButtonElement>) {
+    e.preventDefault();
+    setPaidNotifying(true);
+    setPaidMsg('');
+    try {
+      const res = await fetch('/api/paid', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setPaidMsg(data.error || 'Ошибка');
+        return;
+      }
+      setPaidSent(true);
+      setPaidMsg('Мы получили уведомление — подтвердим в ближайшее время!');
+    } catch {
+      setPaidMsg('Ошибка сети. Попробуй ещё раз или напиши в Telegram.');
+    } finally {
+      setPaidNotifying(false);
+    }
+  }
 
   const USD_RATE = 90;
   const convertPrice = price / USD_RATE;
@@ -217,6 +244,17 @@ export default function BuyButton({
             <Link href="/account" className="btn btn-primary" style={{ width: '100%' }}>
               📥 Перейти в личный кабинет
             </Link>
+            <p style={{ marginTop: 10 }}>
+              <button
+                onClick={notifyPaid}
+                disabled={paidNotifying}
+                className="btn btn-outline"
+                style={{ width: '100%', borderColor: 'var(--green)', color: 'var(--green)' }}
+              >
+                {paidNotifying ? 'Отправляем...' : paidSent ? '✓ Отправлено!' : '💬 Я оплатил — подтвердите заказ'}
+              </button>
+              {paidMsg && <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{paidMsg}</span>}
+            </p>
           </div>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: 10, textAlign: 'center' }}>
             Проблемы с оплатой? Пиши нам — поможем! Поддержка: @vYwmyfBcyY

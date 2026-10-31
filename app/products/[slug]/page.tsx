@@ -105,6 +105,12 @@ export default async function ProductPage({ params }: { params: { slug: string }
                 price={product.price}
               />
               <p className="secure-note">🔒 Доставка в личном кабинете после оплаты</p>
+              <div style={{ display: 'grid', gap: 8, marginTop: 14, fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                <span>⚡ <b>Автовыдача</b> — файл сразу после оплаты</span>
+                <span>🛡️ <b>Гарантия</b> — товар соответствует описанию</span>
+                <span>💬 <b>Поддержка</b> 12/7 в Telegram @vYwmyfBcyY</span>
+                <span>🎁 Промокод <b style={{ color: 'var(--accent)' }}>FEDERAL</b> — скидка −20%</span>
+              </div>
             </div>
           </div>
 
