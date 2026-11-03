@@ -3,6 +3,7 @@ import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import FederalAI from '@/components/FederalAI';
+import PromoBar from '@/components/PromoBar';
 
 const SITE = 'https://federal-store.ru';
 
@@ -57,6 +58,7 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <PromoBar />
         <Header />
         <main>{children}</main>
         <Footer />

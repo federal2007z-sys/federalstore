@@ -90,6 +90,18 @@ export default async function Home() {
 
       <DealOfDay product={deal} />
 
+      <section className="reveal" style={{ padding: '50px 0 10px' }}>
+        <div className="container">
+          <h2 className="sec-title">🔥 Хиты продаж</h2>
+          <p className="sec-sub">То, что берут чаще всего.</p>
+          <div className="grid-3">
+            {products.filter((p) => ['digital-cs2-binds-pack', 'digital-warthunder-tactics-guide', 'service-avatar-pack', 'digital-elden-ring-guide', 'digital-pc-optimization', 'digital-valorant-settings-pack'].includes(p.id)).map((p) => (
+              <ProductCard key={p.id} p={p} />
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section id="features" className="reveal" style={{ padding: '60px 0' }}>
         <div className="container">
           <div className="grid-3" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 20 }}>
@@ -141,6 +153,31 @@ export default async function Home() {
             ))}
           </div>
           <p id="products-empty" style={{ display: 'none', textAlign: 'center', color: 'var(--text-muted)' }}>Ничего не найдено. Попробуйте другой запрос.</p>
+        </div>
+      </section>
+
+      <section className="reveal" style={{ padding: '50px 0' }}>
+        <div className="container">
+          <h2 className="sec-title">📚 Бесплатные гайды</h2>
+          <p className="sec-sub">Полезные инструкции по играм — читай бесплатно, а готовые материалы забирай в магазине.</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 14 }}>
+            {[
+              { t: 'Как поднять FPS в CS2', u: '/guides/kak-podnyat-fps-v-cs2' },
+              { t: 'Тренировка аима в CS2', u: '/guides/aim-trenirovka-с2' },
+              { t: 'Билды для Elden Ring', u: '/guides/billy-dlya-elden-ring' },
+              { t: 'Бизнесы в GTA 5 Online', u: '/guides/biznesy-v-gta-5-online' },
+              { t: 'Фермы в Minecraft', u: '/guides/fermy-v-minecraft' },
+              { t: 'Прицелы в Valorant', u: '/guides/pritsel-valorant' },
+            ].map((g) => (
+              <Link key={g.u} href={g.u} className="card" style={{ padding: '18px 20px', textDecoration: 'none', display: 'block' }}>
+                <span style={{ fontWeight: 700, color: 'var(--text)' }}>{g.t}</span>
+                <span style={{ display: 'block', marginTop: 8, color: 'var(--accent)', fontSize: '0.85rem', fontWeight: 700 }}>Читать →</span>
+              </Link>
+            ))}
+          </div>
+          <p style={{ textAlign: 'center', marginTop: 20 }}>
+            <Link href="/guides" className="btn btn-outline">Все гайды</Link>
+          </p>
         </div>
       </section>
 
